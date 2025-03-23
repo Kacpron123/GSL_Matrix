@@ -1,7 +1,9 @@
 #include "Matrix.h"
 #include <iostream>
+#include <exception>
+
 void Matrix::print(double d) const{
-   printf("%-0.17f ",d);
+   printf("%+0.17f ",d);
 }
 Matrix::Matrix(int rows,int col,int fill){
    _matrix=gsl_matrix_calloc(rows,col);
@@ -56,14 +58,19 @@ Matrix& Matrix::operator=(const Matrix& other){
 }
 void Matrix::fill(std::vector<std::vector<double>> c){
    if(size().y!=c.size() || size().x!=c[0].size())
-      throw("zle wymiary");
+      throw std::invalid_argument("wrong dimensions");
    for(int y=0;y<size().y;y++)
       for(int x=0;x<size().x;x++)
    (*this)[y][x]=c[y][x];
 }
+void Matrix::fill(std::function<double(int,int)> func){
+   for(int y=0;y<size().y;y++)
+      for(int x=0;x<size().x;x++)
+   (*this)[y][x]=func(x,y);
+}
 Matrix Matrix::operator*(Matrix &O){
    if(size().x!=O.size().y)
-      throw("zle wymiary");
+      throw std::invalid_argument("wrong dimensions");
    Matrix res(O.size().x,size().y);
    for(int y=0;y<res.size().y;y++)
       for(int x=0;x<res.size().x;x++)
@@ -77,4 +84,39 @@ Matrix Matrix::transpose(){
       for(int x=0;x<size().x;x++)
          res[y][x]=(*this)[x][y];
    return res;
+}
+Matrix Matrix::operator+(Matrix &O){
+   if(size().x!=O.size().x || size().y!=O.size().y)
+      throw std::invalid_argument("wrong dimensions");
+   Matrix res(size().x,size().y);
+   for(int y=0;y<size().y;y++)
+      for(int x=0;x<size().x;x++)
+         res[y][x]=(*this)[y][x]+O[y][x];
+   return res;
+}
+Matrix Matrix::operator-(Matrix &O){
+   if(size().x!=O.size().x || size().y!=O.size().y)
+      throw std::invalid_argument("wrong dimensions");
+   Matrix res(size().x,size().y);
+   for(int y=0;y<size().y;y++)
+      for(int x=0;x<size().x;x++)
+         res[y][x]=(*this)[y][x]-O[y][x];
+   return res;
+}
+Matrix Matrix::operator*(double scalar){
+   Matrix res(size().x,size().y);
+   for(int y=0;y<size().y;y++)
+      for(int x=0;x<size().x;x++)
+         res[y][x]*=scalar;
+   return res;
+}
+Matrix Matrix::operator/(double scalar){
+   Matrix res(size().x,size().y);
+   for(int y=0;y<size().y;y++)
+      for(int x=0;x<size().x;x++)
+         res[y][x]/=scalar;
+   return res;
+}
+Matrix operator*(double scalar,Matrix &O){
+   return O*scalar;
 }

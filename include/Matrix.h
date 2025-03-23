@@ -5,6 +5,7 @@
 #include "gsl_linalg.h"
 
 #include <vector>
+#include <functional>
 class Matrix{
 private:
 gsl_matrix* _matrix;
@@ -38,9 +39,13 @@ class Row{
     Matrix(gsl_matrix *copy);
     /// @brief filling Matrix from vector
     void fill(std::vector<std::vector<double>> c);
+    /// @brief filling Matrix from function
+    void fill(std::function<double(int,int)> func);
     /// @brief printing content of Matricx
     void print() const;
+    /// @brief printing content of Matricx
     static void print(gsl_matrix *matrix);
+    /// @brief transpose Matrix
     Matrix transpose();
     /// @brief size of Matrix
     /// @return size{x,y}
@@ -54,5 +59,14 @@ class Row{
     Row operator[](int j);
     /// @brief multiplication of Matrixies
     Matrix operator*(Matrix &O);
+    /// @brief addition of Matrixies
+    Matrix operator+(Matrix &O);
+    /// @brief substraction of Matrixies
+    Matrix operator-(Matrix &O);
+    /// @brief multiplication of Matrix and scalar
+    Matrix operator*(double scalar);
+    friend Matrix operator*(double scalar,Matrix &O);
+    /// @brief division of Matrix and scalar
+    Matrix operator/(double scalar);
 };
 #endif
