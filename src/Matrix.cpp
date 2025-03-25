@@ -3,7 +3,7 @@
 #include <exception>
 
 void Matrix::print(double d) const{
-   printf("%+0.17f ",d);
+   printf("%+.4e ",d);
 }
 Matrix::Matrix(int rows,int col,int fill){
    _matrix=gsl_matrix_calloc(rows,col);
@@ -16,7 +16,11 @@ Matrix::Matrix(int rows,int col,int fill){
 }
 Matrix::Matrix(const Matrix& copy){
    _matrix=gsl_matrix_calloc(copy.size().x,copy.size().y);
-   gsl_matrix_memcpy(copy._matrix,_matrix);
+   gsl_matrix_memcpy(_matrix,copy._matrix);
+}
+Matrix::Matrix(const Matrix&& copy){
+   _matrix=gsl_matrix_calloc(copy.size().x,copy.size().y);
+   gsl_matrix_memcpy(_matrix,copy._matrix);
 }
 Matrix::Matrix(std::vector<std::vector<double>> vector): Matrix(vector[0].size(),vector.size()){
    fill(vector);
@@ -68,7 +72,7 @@ void Matrix::fill(std::function<double(int,int)> func){
       for(int x=0;x<size().x;x++)
    (*this)[y][x]=func(x,y);
 }
-Matrix Matrix::operator*(Matrix &O){
+Matrix Matrix::operator*(Matrix O){
    if(size().x!=O.size().y)
       throw std::invalid_argument("wrong dimensions");
    Matrix res(O.size().x,size().y);
@@ -82,10 +86,16 @@ Matrix Matrix::transpose(){
    Matrix res(size().y,size().x);
    for(int y=0;y<size().y;y++)
       for(int x=0;x<size().x;x++)
-         res[y][x]=(*this)[x][y];
+         res[x][y]=(*this)[y][x];
    return res;
 }
-Matrix Matrix::operator+(Matrix &O){
+Matrix Matrix::inverse(){
+   if(size().x!=size().y)  
+      throw std::invalid_argument("wrong dimensions");
+   // TODO: implement inverse
+   throw std::invalid_argument("not implemented");
+}
+Matrix Matrix::operator+(Matrix O){
    if(size().x!=O.size().x || size().y!=O.size().y)
       throw std::invalid_argument("wrong dimensions");
    Matrix res(size().x,size().y);
@@ -94,7 +104,7 @@ Matrix Matrix::operator+(Matrix &O){
          res[y][x]=(*this)[y][x]+O[y][x];
    return res;
 }
-Matrix Matrix::operator-(Matrix &O){
+Matrix Matrix::operator-(Matrix O){
    if(size().x!=O.size().x || size().y!=O.size().y)
       throw std::invalid_argument("wrong dimensions");
    Matrix res(size().x,size().y);
@@ -104,7 +114,7 @@ Matrix Matrix::operator-(Matrix &O){
    return res;
 }
 Matrix Matrix::operator*(double scalar){
-   Matrix res(size().x,size().y);
+   Matrix res(*this);
    for(int y=0;y<size().y;y++)
       for(int x=0;x<size().x;x++)
          res[y][x]*=scalar;
@@ -117,6 +127,6 @@ Matrix Matrix::operator/(double scalar){
          res[y][x]/=scalar;
    return res;
 }
-Matrix operator*(double scalar,Matrix &O){
+Matrix operator*(double scalar,Matrix O){
    return O*scalar;
 }

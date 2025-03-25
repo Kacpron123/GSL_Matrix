@@ -33,6 +33,8 @@ class Row{
     Matrix(int rows,int col,int fill=0);
     //copy constructor
     Matrix(const Matrix &copy);
+    //copy constructor
+    Matrix(const Matrix &&copy);
     /// @brief constructor from vector
     Matrix(std::vector<std::vector<double>> vector);
     //copy constructor
@@ -47,6 +49,8 @@ class Row{
     static void print(gsl_matrix *matrix);
     /// @brief transpose Matrix
     Matrix transpose();
+    /// @brief inverse Matrix 
+    Matrix inverse();
     /// @brief size of Matrix
     /// @return size{x,y}
     _size size() const;
@@ -58,14 +62,14 @@ class Row{
     /// @operator accesing maitrix[y][x]
     Row operator[](int j);
     /// @brief multiplication of Matrixies
-    Matrix operator*(Matrix &O);
+    Matrix operator*(Matrix O);
     /// @brief addition of Matrixies
-    Matrix operator+(Matrix &O);
+    Matrix operator+(Matrix O);
     /// @brief substraction of Matrixies
-    Matrix operator-(Matrix &O);
+    Matrix operator-(Matrix O);
     /// @brief multiplication of Matrix and scalar
     Matrix operator*(double scalar);
-    friend Matrix operator*(double scalar,Matrix &O);
+    friend Matrix operator*(double scalar,Matrix O);
     /// @brief division of Matrix and scalar
     Matrix operator/(double scalar);
 };
