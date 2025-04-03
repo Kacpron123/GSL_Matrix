@@ -12,10 +12,14 @@ gsl_matrix* _matrix;
 void print(double) const;
 class Row{
     private:
+        /// @brief pointer to gsl_matrix::data
         double* m_data;
+        /// @brief size().x of Matrix
+        int m_sizex;
+        /// @brief gsl_matrix::tda
         int m_width;
     public:
-        Row(double* data,int width);
+        Row(double* data,int sizex,int width);
         ~Row();
         size_t size() const;
         double& operator[](int j);

@@ -3,7 +3,7 @@
 #include <exception>
 
 //Row
-Matrix::Row::Row(double* data,int width):m_data(data),m_width(width){}
+Matrix::Row::Row(double* data,int sizex,int width):m_data(data),m_sizex(sizex),m_width(width){}
 Matrix::Row::~Row(){
    m_data=nullptr;
    m_width=0;
@@ -11,8 +11,8 @@ Matrix::Row::~Row(){
 size_t Matrix::Row::size() const{
    return m_width;}
 double& Matrix::Row::operator[](int j){
-   if(j<0 || j>=m_width)
-       throw std::out_of_range("Row index out of range");
+   if(j<0 || j>=m_sizex)
+       throw std::out_of_range("Row index.x out of range");
    return m_data[j*m_width];}
 //Matrix
 void Matrix::print(double d) const{
@@ -63,9 +63,8 @@ Matrix::_size Matrix::size() const{
 }
 Matrix::Row Matrix::operator[](int j){
    if(j<0 || j>=size().y)
-      throw std::out_of_range("Row index out of range");
-   Row row(_matrix->data+j,_matrix->tda);
-   // std::cout<<row.size()<<"\n";
+      throw std::out_of_range("Row index.y out of range");
+   Row row(_matrix->data+j,size().x,_matrix->tda);
    return row;
 }
 Matrix& Matrix::operator=(const Matrix& other){
