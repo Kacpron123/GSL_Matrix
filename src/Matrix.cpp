@@ -2,6 +2,19 @@
 #include <iostream>
 #include <exception>
 
+//Row
+Matrix::Row::Row(double* data,int width):m_data(data),m_width(width){}
+Matrix::Row::~Row(){
+   m_data=nullptr;
+   m_width=0;
+}
+size_t Matrix::Row::size() const{
+   return m_width;}
+double& Matrix::Row::operator[](int j){
+   if(j<0 || j>=m_width)
+       throw std::out_of_range("Row index out of range");
+   return m_data[j*m_width];}
+//Matrix
 void Matrix::print(double d) const{
    printf("%+.4e ",d);
 }
@@ -49,6 +62,8 @@ Matrix::_size Matrix::size() const{
    return s;
 }
 Matrix::Row Matrix::operator[](int j){
+   if(j<0 || j>=size().y)
+      throw std::out_of_range("Row index out of range");
    Row row(_matrix->data+j,_matrix->tda);
    // std::cout<<row.size()<<"\n";
    return row;
@@ -81,6 +96,12 @@ Matrix Matrix::operator*(Matrix O){
          for(int i=0;i<size().x;i++)
             res[y][x]+=(*this)[y][i]*O[i][x];
    return res;
+}
+Matrix::operator double(){
+   if (size().x != 1 || size().x != 1) {
+      throw std::runtime_error("Matrix is not 1x1, cannot convert to double.");
+   }
+   return (*this)[0][0];
 }
 Matrix Matrix::transpose(){
    Matrix res(size().y,size().x);
@@ -121,7 +142,7 @@ Matrix Matrix::operator*(double scalar){
    return res;
 }
 Matrix Matrix::operator/(double scalar){
-   Matrix res(size().x,size().y);
+   Matrix res(*this);
    for(int y=0;y<size().y;y++)
       for(int x=0;x<size().x;x++)
          res[y][x]/=scalar;
@@ -129,4 +150,7 @@ Matrix Matrix::operator/(double scalar){
 }
 Matrix operator*(double scalar,Matrix O){
    return O*scalar;
+}
+gsl_matrix* Matrix::operator*(){
+   return _matrix;
 }

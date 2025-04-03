@@ -12,13 +12,13 @@ gsl_matrix* _matrix;
 void print(double) const;
 class Row{
     private:
-        double* _data;
-        int _width;
+        double* m_data;
+        int m_width;
     public:
-        Row(double* data,int width):_data(data),_width(width){};
-        ~Row(){_data=nullptr;}
-        size_t size() const{return _width;}
-        double& operator[](int j){return _data[j*_width];}
+        Row(double* data,int width);
+        ~Row();
+        size_t size() const;
+        double& operator[](int j);
     };
     struct _size{
        size_t x;
@@ -58,7 +58,9 @@ class Row{
     Matrix& operator=(const Matrix& other);
     /// @brief pointer opetor
     /// @return pointer to gsl_matrix
-    gsl_matrix* operator*(){return _matrix;}
+    gsl_matrix* operator*();
+    /// @brief double convertion operator
+    operator double();
     /// @operator accesing maitrix[y][x]
     Row operator[](int j);
     /// @brief multiplication of Matrixies
